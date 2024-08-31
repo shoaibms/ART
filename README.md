@@ -52,8 +52,5 @@ source env_name/bin/activate
 
 *Install the necessary dependencies:*
 
-You can manually install the required packages by following the
-instructions provided within the code or using a provided
-requirements.txt file. If specific installation instructions are
-included in the scripts or other documentation, please follow those to
-ensure you have the correct setup.
+You can manually install the required packages in this virtual environment based on your needs. 
+If there are conflicts, you can create a separate environment to resolve them.
