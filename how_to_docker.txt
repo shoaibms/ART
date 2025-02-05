@@ -1,0 +1,196 @@
+# contains r an python fille 
+thus create: requirements.txt (for python) and r_requirements.txt ( for r)
+
+# create Dockerfile
+single dockerfile was not working as HDBSCAN was conflicting 
+thus we created Dockerfile (for all pakage) and Dockerfile.hdbscan (for HDBSCAN)
+
+
+# Create a docker-compose.yml to manage both containers
+
+
+####################################################
+#Build and run using docker-compose
+docker-compose build
+
+#Start the containers
+docker-compose up -d
+
+##To verify both containers are running
+docker-compose ps
+
+#To interact with the main container
+docker-compose exec main bash
+
+#To interact with the hdbscan container
+docker-compose exec hdbscan bash
+
+#To test if hdbscan is working in its container
+docker-compose exec hdbscan python3 -c "import hdbscan; print(hdbscan.__version__)"
+
+# To stop the containers
+docker-compose down
+######################################################
+
+
+
+#################
+Dockerfile
+#################
+# Use the rocker/verse image as the base
+FROM rocker/verse:latest
+
+# Install Python 3.11 and necessary tools
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.11 python3.11-venv python3.11-dev \
+    build-essential libyaml-dev && \
+    apt-get clean
+
+# Set the working directory
+WORKDIR /app
+
+# Create and activate a Python virtual environment with Python 3.11
+RUN python3.11 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install base Python packages first
+RUN pip3 install --upgrade pip && \
+    pip3 install --no-cache-dir wheel setuptools
+
+# Install core dependencies first with compatible versions
+RUN pip3 install --no-cache-dir \
+    numpy==1.26.0 \
+    scipy==1.10.1 \
+    pandas==2.2.3 \
+    python-dateutil==2.9.0.post0 \
+    pytz==2024.2 \
+    six==1.17.0 \
+    tzdata==2024.2
+
+# Install scikit-learn first
+RUN pip3 install --no-cache-dir scikit-learn==1.3.0
+
+# Install other ML packages separately
+RUN pip3 install --no-cache-dir xgboost==1.7.6
+RUN pip3 install --no-cache-dir lightgbm==4.0.0
+RUN pip3 install --no-cache-dir catboost==1.2
+
+# Install image processing and visualization
+RUN pip3 install --no-cache-dir \
+    Pillow==10.0.0 \
+    matplotlib==3.7.2 \
+    opencv-python==4.8.0.76 \
+    scikit-image==0.21.0 \
+    seaborn==0.12.2
+
+# Install remaining packages
+RUN pip3 install --no-cache-dir \
+    joblib==1.3.2 \
+    scikit-plot==0.3.7 \
+    tqdm==4.66.1 \
+    pyzbar==0.1.9 \
+    scikit-bio==0.5.9 \
+    scikit-posthocs==0.7.0
+
+# Copy R requirements file and install R dependencies
+COPY r_requirements.txt .
+RUN R -e "install.packages('remotes', repos = 'https://cloud.r-project.org')" && \
+    R -e "remotes::install_cran(readLines('r_requirements.txt'))"
+
+# Copy the rest of your application code into the container
+COPY . .
+
+# Set the default command (modify as needed)
+CMD ["tail", "-f", "/dev/null"]
+
+
+
+##################
+Dockerfile.hsbscan
+##################
+FROM python:3.9-slim-buster
+
+# Install system dependencies needed for compilation
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libopenblas-dev \
+    gcc \
+    gfortran \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Create a Python virtual environment and activate it
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Upgrade pip and install base Python packages with specific versions
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir \
+        numpy==1.24.4 \
+        scipy==1.11.1 \
+        cython==0.29.36 \
+        scikit-learn==1.3.0
+
+# Install hdbscan with the compatible version
+RUN pip install --no-cache-dir hdbscan==0.8.33
+
+# Create a test script directly in the Dockerfile
+RUN echo "import hdbscan; print('HDBSCAN installation successful')" > test.py
+
+# Test the installation
+RUN python test.py
+
+CMD ["tail", "-f", "/dev/null"]
+
+
+
+
+#########################
+#dockercompose.yml
+#########################
+services:
+  main:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8888:8888"
+    tty: true
+    stdin_open: true
+
+  hdbscan:
+    build:
+      context: .
+      dockerfile: Dockerfile.hdbscan
+    volumes:
+      - .:/app
+    tty: true
+    stdin_open: true
+
+
+
+#########################
+#.dockerignore
+#########################
+
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+.pytest_cache
+*.log

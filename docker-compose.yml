@@ -1,0 +1,20 @@
+services:
+  main:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8888:8888"
+    tty: true
+    stdin_open: true
+
+  hdbscan:
+    build:
+      context: .
+      dockerfile: Dockerfile.hdbscan
+    volumes:
+      - .:/app
+    tty: true
+    stdin_open: true
