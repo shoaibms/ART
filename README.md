@@ -106,7 +106,7 @@ ART/
     - OPTICS
     - Fuzzy C-means
     - SLIC
-  - UCustom Clustering:
+  - Custom Clustering:
     - Density_Algorithm
   - Classification:
     - Random Forest
