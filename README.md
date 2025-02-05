@@ -95,7 +95,7 @@ ART/
 - **Image Processing**: 
   - OpenCV (image preprocessing)
   - [RootPainter](https://github.com/Abe404/root_painter) (segmentation)
-  - Custom algorithms for trait extraction
+  - Machine learning and Custom algorithms for trait extraction
 - **Machine Learning Framework**: 
   - Unsupervised Clustering:
     - DBSCAN
