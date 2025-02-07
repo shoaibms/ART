@@ -22,7 +22,7 @@ ART (Algorithmic Root Trait) is designed to uncover hidden root traits using sta
 ## 🔑 Keywords
 `root-phenotyping` `machine-learning` `computer-vision` `plant-science` `image-analysis` `agriculture` `phenomics` `root-traits` `drought-tolerance` `plant-breeding` `Algorithmic Root Traits (ART)` `wheat` `latent trait` `root` `Image analysis`
 
-## 🏗 System Architecture
+## 🏗 Folder Architecture
 ```mermaid
 flowchart TD;
     root[ART] --> scripts
