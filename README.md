@@ -36,7 +36,7 @@ flowchart TD;
     python --> classification[Classification]
     python --> rests[Rests]
 
-    algorithms --> algos[Algorithms
+    algorithms --> algos[ART Algorithms
         DBSCAN.py
         DBSCAN_Plot.py
         Density_Algorithm.py
