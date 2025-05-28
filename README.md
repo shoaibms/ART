@@ -28,47 +28,66 @@ flowchart TD;
     root[ART] --> scripts
     root --> docker
     root --> requirements
-
     scripts --> python[Python]
     scripts --> r[R]
-
-    python --> algorithms[Algorithms]
+    python --> additional[Additional_analysis]
+    python --> algorithms[Algorithms_for_ART_Generation]
     python --> classification[Classification]
-    python --> rests[Rests]
-
-    algorithms --> algos[
+    python --> visualisation[Visualisation]
+    
+    additional --> addFiles[
+        baseline_comparison_shap.py
+        cor_abl.py
+        methodology_report.py
+        t-SNE_UMAP.py]
+    
+    algorithms --> algoFiles[
         DBSCAN.py
-        DBSCAN_Plot.py
+        DBSCAN_plot.py
         Density_Algorithm.py
-        FMC.py
+        Density_AlgorithmPlot.py
+        FCM.py
+        FCM_plot.py
         GMM.py
+        GMM_Plot.py
         HDBSCAN.py
+        HDBSCAN_Plot.py
         K-Mean.py
+        K-Mean_Plot.py
+        Mean_Shift.py
+        Mean_Shift_Plot.py
         OPTICS.py
-        SLIC.py]
-
+        OPTICS_Plot.py
+        SLIC.py
+        SLIC_Plot.py]
+    
     classification --> classFiles[
         CatBoost.py
         Catboost_Validation.py
-        RandomForest.py
-        RandomForest_Validation.py]
-
-    rests --> restFiles[
-        CDF_Plot.py
-        Algorithm_Compare.py
-        DensityPlot.py
-        Feature_Plot.py]
-
+        Classification_Algorithms.py
+        RandomForest_Validation_v1.py
+        RandomForest_Validation_v2.py
+        RandomForest_v1.py
+        RandomForest_v2.py]
+    
+    visualisation --> visFiles[
+        Fig_2.py
+        PCA_t-SNE_origianl vs A_B_data.py
+        fig_4.py
+        fig_5.py
+        fig_6_A-B.py
+        fig_7.py]
+    
     r --> rFiles[
-        CatBoost_Validation.R
+        CatBooost_Validation.R
         RandomForest_Validation.R
         Rank_Plot.R]
-
+    
     docker --> dockerFiles[
         Dockerfile
         Dockerfile.hdbscan
         docker-compose.yml]
-
+    
     requirements --> reqFiles[
         requirements.txt
         r_requirements.txt]
@@ -79,9 +98,10 @@ style python fill:#f96,stroke:#333,stroke-width:2px
 style r fill:#f96,stroke:#333,stroke-width:2px
 style docker fill:#f96,stroke:#333,stroke-width:2px
 style requirements fill:#f96,stroke:#333,stroke-width:2px
+style additional fill:#f96,stroke:#333,stroke-width:2px
 style algorithms fill:#f96,stroke:#333,stroke-width:2px
 style classification fill:#f96,stroke:#333,stroke-width:2px
-style rests fill:#f96,stroke:#333,stroke-width:2px
+style visualisation fill:#f96,stroke:#333,stroke-width:2px
 ```
 
 ## 🔧 Requirements
