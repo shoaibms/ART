@@ -1,4 +1,4 @@
-# This script performs a comprehensive analysis of Agricultural Root Trait (ART) data
+# This script performs a comprehensive analysis of Algorithmic Root Trait (ART) data
 # and Traditional Root Trait (TRT) data. It includes:
 # 1. Correlation analysis between ART and TRT features with significance testing.
 # 2. Feature importance analysis using Random Forest and permutation importance
