@@ -1,3 +1,17 @@
+# This script evaluates a pre-trained machine learning model on a new validation dataset.
+# It loads the model and a corresponding label encoder, predicts on the validation data,
+# calculates various performance metrics (e.g., accuracy, precision, recall, F1-score, ROC AUC),
+# and generates several plots to visualize the model's performance, including:
+# - ROC Curve
+# - Precision-Recall Curve
+# - Confusion Matrix
+# - Distribution of Predicted Probabilities
+# - Violin Plot of Predicted Probabilities
+# - Feature Importances (if available from the model)
+# - Cumulative Gains Curve
+# - Lift Curve
+# All metrics and plots are saved to a specified output directory.
+
 import pandas as pd
 import seaborn as sns
 from joblib import load
@@ -9,21 +23,29 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_s
                              confusion_matrix, ConfusionMatrixDisplay)
 import os
 
-# --- Configuration ---
-# Assuming the training script output its results to a directory like this:
-TRAINING_OUTPUT_DIR = r'C:\Users\ms\Desktop\data\output\rf\train\Combine_A_B_Results_RF' # From ml_RandomForest3c.py
-VALIDATION_DATA_PATH = r'C:\Users\ms\Desktop\data\Combine_validate.csv' # Your separate validation dataset
+# --- Reproducibility ---
+np.random.seed(42)
+# Note: If other libraries involving randomness are used (e.g., TensorFlow, PyTorch),
+# their respective seeding functions should also be called here.
 
-BASE_OUTPUT_DIR_VALIDATION = r'C:\Users\ms\Desktop\data\output\rf\val' # Base for this script's output
+# --- Configuration ---
+# Example: r'./output/rf/train/your_training_results_directory'
+TRAINING_OUTPUT_DIR = r'./output/rf/train/training_results' # Placeholder: Specify path to your training output
+# Example: r'./data/validation_data.csv'
+VALIDATION_DATA_PATH = r'./data/validation_data.csv' # Placeholder: Specify path to your validation dataset
+
+# Example: r'./output/rf/val'
+BASE_OUTPUT_DIR_VALIDATION = r'./output/rf/val' # Base for this script's output
 
 # Create a specific subdirectory for this validation run's results
-VALIDATION_DATASET_NAME = os.path.splitext(os.path.basename(VALIDATION_DATA_PATH))[0] # e.g., "Combine_validate"
+VALIDATION_DATASET_NAME = os.path.splitext(os.path.basename(VALIDATION_DATA_PATH))[0]
 OUTPUT_DIR = os.path.join(BASE_OUTPUT_DIR_VALIDATION, f"{VALIDATION_DATASET_NAME}_Results_RF")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Model and encoder paths (relative to TRAINING_OUTPUT_DIR)
-MODEL_FILENAME = 'model_Combine_A_B_RF.joblib' # Name used in training script
-LABEL_ENCODER_FILENAME = 'Combine_A_B_label_encoder.joblib' # Name used in training script
+# These should match the filenames used in your training script
+MODEL_FILENAME = 'model_output.joblib' # Placeholder: e.g., 'model_RandomForest_SetA.joblib'
+LABEL_ENCODER_FILENAME = 'label_encoder.joblib' # Placeholder: e.g., 'SetA_label_encoder.joblib'
 
 MODEL_PATH = os.path.join(TRAINING_OUTPUT_DIR, MODEL_FILENAME)
 LABEL_ENCODER_PATH = os.path.join(TRAINING_OUTPUT_DIR, LABEL_ENCODER_FILENAME)
@@ -49,7 +71,7 @@ VIOLIN_PALETTE_GREEN = ['#a1d99b', '#41ab5d'] # Light and dark green
 # --- Helper Function to Save Plots ---
 def save_plot(filename, directory=OUTPUT_DIR, dpi=300):
     plt.savefig(os.path.join(directory, filename), dpi=dpi, bbox_inches='tight')
-    # plt.show() # Commented out for batch processing
+    # plt.show() # Commented out for batch processing or saving figures without displaying
     plt.close()
 
 # --- Load Model and Data ---
@@ -64,7 +86,7 @@ print(f"Loading label encoder from: {LABEL_ENCODER_PATH}")
 try:
     label_encoder = load(LABEL_ENCODER_PATH)
 except FileNotFoundError:
-    print(f"Error: Label encoder file not found at {LABEL_ENCODER_PATH}. Ensure the training script ran successfully.")
+    print(f"Error: Label encoder file not found at {LABEL_ENCODER_PATH}. Check path and training script output.")
     exit()
 
 print(f"Loading new validation data from: {VALIDATION_DATA_PATH}")
@@ -98,9 +120,10 @@ if hasattr(loaded_model, "predict_proba"):
     # The index [:, 1] assumes the positive class is the second class by the encoder.
     # Verify this with label_encoder.classes_
     if len(label_encoder.classes_) > 1 : # Ensure there are at least two classes
-        # Find the index of the positive class based on the encoder's sorting
-        # This is usually the class with the label that sorts last alphabetically
-        positive_class_label = label_encoder.classes_[1]
+        # Find the index of the positive class.
+        # This typically corresponds to the class label that comes second alphabetically/numerically
+        # or is explicitly designated as the positive class during encoding.
+        positive_class_label = label_encoder.classes_[1] # Assuming [0] is negative, [1] is positive
         positive_class_index = np.where(label_encoder.classes_ == positive_class_label)[0][0]
         new_probabilities_positive_class = loaded_model.predict_proba(new_X)[:, positive_class_index]
     else:
@@ -280,7 +303,8 @@ if new_probabilities_all_classes is not None:
         # IMPORTANT: Change 'T' to the exact name of the class in your label_encoder.classes_
         # For example, if your classes are ['Control', 'Treatment_X'], and you want to color 'Treatment_X',
         # set target_class_label_for_coloring = 'T'
-        target_class_label_for_coloring = 'T'
+        # Update this to match one of your actual class names from `label_encoder.classes_`
+        target_class_label_for_coloring = 'T' # Placeholder: e.g., 'Positive_Class' or label_encoder.classes_[1]
         color_for_target_class = LINE_COLOR_SECONDARY_GREEN # This is 'mediumseagreen'
 
         # --- Cumulative Gains Plot ---
@@ -306,7 +330,7 @@ if new_probabilities_all_classes is not None:
                  #    lines[len(encoded_classes)].set_color('gray') # Example: make baseline gray
 
         # --- Adjust Legend and Title ---
-        #plt.title('Cumulative Gains Curve (Validation Set)', fontsize=TITLE_FONTSIZE) # This remains commented
+        #plt.title('Cumulative Gains Curve (Validation Set)', fontsize=TITLE_FONTSIZE) # Titles are optional
         plt.xlabel('Percentage of samples', fontsize=LABEL_FONTSIZE)
         plt.ylabel('Gain', fontsize=LABEL_FONTSIZE)
         plt.xticks(fontsize=TICK_FONTSIZE)
@@ -350,7 +374,7 @@ if new_probabilities_all_classes is not None:
 
 
         # --- Adjust Legend and Title ---
-        #plt.title('Lift Curve (Validation Set)', fontsize=TITLE_FONTSIZE) # This remains commented
+        #plt.title('Lift Curve (Validation Set)', fontsize=TITLE_FONTSIZE) # Titles are optional
         plt.xlabel('Percentage of samples', fontsize=LABEL_FONTSIZE)
         plt.ylabel('Lift', fontsize=LABEL_FONTSIZE)
         plt.xticks(fontsize=TICK_FONTSIZE)
