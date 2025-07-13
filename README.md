@@ -7,6 +7,7 @@
 [![R](https://img.shields.io/badge/R-4.3.2-blue.svg)](https://www.r-project.org/)
 [![Docker](https://img.shields.io/badge/Docker-24.0+-blue.svg)](https://www.docker.com/)
 [![Licence](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![DOI](https://doi.org/badge/DOI/10.1016/j.plaphe.2025.100088.svg)](https://doi.org/10.1016/j.plaphe.2025.100088)
 
 ## 🎯 The Challenge & Our Solution
 
