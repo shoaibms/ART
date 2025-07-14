@@ -7,7 +7,7 @@
 [![R](https://img.shields.io/badge/R-4.3.2-blue.svg)](https://www.r-project.org/)
 [![Docker](https://img.shields.io/badge/Docker-24.0+-blue.svg)](https://www.docker.com/)
 [![Licence](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![DOI](https://doi.org/badge/DOI/)](https://www.sciencedirect.com/science/article/pii/S2643651525000949)
+[![Article](https://img.shields.io/badge/Article-Available%20Online-green)](https://www.sciencedirect.com/science/article/pii/S2643651525000949)
 
 ## 🎯 The Challenge & Our Solution
 
